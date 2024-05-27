@@ -3,6 +3,7 @@ Resources: <br>
 [Gulp](https://gulpjs.com/) <br>
 [Gulp Guide](https://gulpjs.com/docs/en/getting-started/quick-start/) <br>
 <br>
+# Installation
 ## - Step 1
 ### Install Node.js and npm
 <br>
@@ -170,5 +171,131 @@ gulp.task('default', gulp.series('minify-js', 'watch'));
     - Add a JavaScript file in the **`src`** directory.
     - Run **`gulp`** in your terminal.
     - Check the **`dist`** directory to see the minified JavaScript file.
+
+# Code Preview  
+
+```
+// Gulp Variables
+const gulp = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const livereload = require('gulp-livereload');
+const connect = require('gulp-connect');
+const jshint = require('gulp-jshint');
+const rename = require('gulp-rename');
+const minifyCss = require('gulp-minify-css');
+
+// Server Task
+function serve(done) {
+    connect.server({
+        root: '',
+        port: 1988,
+        livereload: true
+    });
+    done();
+}
+
+// Styles Task
+function styles(done) {
+    gulp.src('css/style.scss')
+        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(minifyCss({ processImport: false }))
+        .pipe(gulp.dest('css/'))
+        .pipe(connect.reload());
+    done();
+}
+
+// HTML Task
+function html(done) {
+    gulp.src('./*.html')
+        .pipe(connect.reload());
+    done();
+}
+
+// JS Lint Task for correcting and monitoring your custom.js
+function lint(done) {
+    gulp.src('js/script.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
+        .pipe(connect.reload());
+    done();
+}
+
+// Watch task to watch for file changes
+function watch(done) {
+    gulp.watch('css/*.scss', gulp.series(styles));
+    gulp.watch('./*.html', gulp.series(html));
+    gulp.watch('js/*.js', gulp.series(lint));
+    done();
+}
+
+// Tasks that Gulp will run
+gulp.task('default', gulp.series(serve, watch, lint, html, styles));
+```
+
+# Breakdwon  
+
+### Gulp Variables  
+```
+const gulp = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const livereload = require('gulp-livereload');
+const connect = require('gulp-connect');
+const jshint = require('gulp-jshint');
+const rename = require('gulp-rename');
+const minifyCss = require('gulp-minify-css');
+
+```
+
+1. **gulp**: The main Gulp module which provides the core functionality of Gulp
+2. **sass**: A Gulp plugin to compile Sass to CSS, using the **`sass`** compiler
+3. **livereload**: A Gulp plugin to automatically reload the browser when files change
+4. **connect**: A Gulp plugin to run a web server
+5. **jshint**: A Gulp plugin to detect errors and potential problems in JavaScript code
+6. **rename**: A Gulp plugin to rename files
+7. **minifyCss**: A Gulp plugin to minify CSS files  
+<br>
+
+### Server Task
+```
+function serve(done) {
+    connect.server({
+        root: '',
+        port: 1988,
+        livereload: true
+    });
+    done();
+}
+```
+- Serve: This function sets up a local web server using gulp-connect
+    - **`root`**: Specifies the root directory for the server (empty string means the current directory)
+    - **`port`**: The port on which the server will listen (1988 in this case)
+    - **`livereload`**: Enables live reloading, which automatically reloads the browser when files change
+ 
+### HTML Task
+```
+function html(done) {
+    gulp.src('./*.html')
+        .pipe(connect.reload());
+    done();
+}
+```
+- HTML: This function handles the reloading of HTML files
+    - **`gulp.src('./*.html')`**: Specifies the source HTML files
+    - **`connect.reload()`**: Reloads the server to reflect changes in HTML files
+
+### JS Lint Task
+```
+function lint(done) {
+    gulp.src('js/custom.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
+        .pipe(connect.reload());
+    done();
+}
+```
+- 
+
+
 
 
